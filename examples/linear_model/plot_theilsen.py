@@ -48,6 +48,9 @@ print(__doc__)
 estimators = [('OLS', LinearRegression()),
               ('Theil-Sen', TheilSenRegressor(random_state=42)),
               ('RANSAC', RANSACRegressor(random_state=42)), ]
+colors = {'OLS': 'turquoise', 'Theil-Sen': 'gold', 'RANSAC': 'lightgreen'}
+linestyle = {'OLS': '-', 'Theil-Sen': '-.', 'RANSAC': '--'}
+lw = 3
 
 ##############################################################################
 # Outliers only in the y direction
@@ -64,19 +67,19 @@ y = w * x + c + noise
 y[-20:] += -20 * x[-20:]
 X = x[:, np.newaxis]
 
-plt.plot(x, y, 'k+', mew=2, ms=8)
+plt.plot(x, y, 'b+', mew=2, ms=8)
 line_x = np.array([-3, 3])
 for name, estimator in estimators:
     t0 = time.time()
     estimator.fit(X, y)
     elapsed_time = time.time() - t0
     y_pred = estimator.predict(line_x.reshape(2, 1))
-    plt.plot(line_x, y_pred,
-             label='%s (fit time: %.2fs)' % (name, elapsed_time))
+    plt.plot(line_x, y_pred, color=colors[name], linestyle=linestyle[name],
+             linewidth=lw, label='%s (fit time: %.2fs)' % (name, elapsed_time))
 
 plt.axis('tight')
 plt.legend(loc='upper left')
-
+plt.title("Corrupt y")
 
 ##############################################################################
 # Outliers in the X direction
@@ -92,7 +95,7 @@ y[-20:] += 22
 X = x[:, np.newaxis]
 
 plt.figure()
-plt.plot(x, y, 'k+', mew=2, ms=8)
+plt.plot(x, y, 'b+', mew=2, ms=8)
 
 line_x = np.array([-3, 10])
 for name, estimator in estimators:
@@ -100,9 +103,10 @@ for name, estimator in estimators:
     estimator.fit(X, y)
     elapsed_time = time.time() - t0
     y_pred = estimator.predict(line_x.reshape(2, 1))
-    plt.plot(line_x, y_pred,
-             label='%s (fit time: %.2fs)' % (name, elapsed_time))
+    plt.plot(line_x, y_pred, color=colors[name], linestyle=linestyle[name],
+             linewidth=lw, label='%s (fit time: %.2fs)' % (name, elapsed_time))
 
 plt.axis('tight')
 plt.legend(loc='upper left')
+plt.title("Corrupt x")
 plt.show()
